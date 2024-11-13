@@ -573,6 +573,10 @@ private void crearPanelPerfil() {
                     "Registradas %d horas para el evento '%s'\n",
                     horas, evento));
                 campoHorasLibres.setText("");
+    
+                // Actualizar el JLabel para mostrar las horas totales
+                int horasTotales = horasPorUsuario.get(nombreActual);
+                lblHorasTotales.setText("Horas Libres: " + horasTotales);
             }
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this,
@@ -581,6 +585,7 @@ private void crearPanelPerfil() {
                 JOptionPane.ERROR_MESSAGE);
         }
     }
+    
 
     private void exportarDatos() {
         if (nombreActual == null) return;
