@@ -412,95 +412,97 @@ private void agregarNuevoEvento(JTextArea areaEventos) {
     }
 
     private void inicializarPanelPerfil() {
-        // Crear el panel con GridBagLayout
         JPanel panelPerfil = new JPanel(new GridBagLayout());
         panelPerfil.setBackground(COLOR_FONDO);
-    
+        
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.WEST;
     
-        // Imagen de perfil
-        JLabel imagenPerfil = new JLabel();
-        imagenPerfil.setPreferredSize(new Dimension(100, 100));
-        imagenPerfil.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        // Sección Biográfica
+        JLabel tituloBiografica = new JLabel("Información Biográfica");
+        tituloBiografica.setFont(new Font("Arial", Font.BOLD, 16));
+        tituloBiografica.setForeground(COLOR_NARANJA);
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.gridwidth = 2; // Ocupa dos columnas
-        panelPerfil.add(imagenPerfil, gbc);
-    
-        // Espaciado vertical
-        gbc.gridy++;
         gbc.gridwidth = 2;
-        panelPerfil.add(Box.createVerticalStrut(20), gbc);
+        panelPerfil.add(tituloBiografica, gbc);
     
-        // Sección Biográfica
-        JLabel tituloBio = new JLabel("Biográfica");
-        tituloBio.setFont(new Font("Arial", Font.BOLD, 14));
-        tituloBio.setForeground(COLOR_NARANJA);
-        gbc.gridy++;
+        // Campos Biográficos
+        String[][] camposBiograficos = {
+            {"Correo:", "usuario@email.com"},
+            {"Fecha de Nacimiento:", "01/01/2000"},
+            {"Teléfono:", "+57 123456789"},
+            {"Ciudadanía:", "Colombiana"}
+        };
+    
+        gbc.gridwidth = 1;
+        int row = 1;
+        for (String[] campo : camposBiograficos) {
+            // Label
+            JLabel label = new JLabel(campo[0]);
+            styleLabel(label);
+            gbc.gridx = 0;
+            gbc.gridy = row;
+            panelPerfil.add(label, gbc);
+    
+            // Valor
+            JLabel valor = new JLabel(campo[1]);
+            valor.setFont(new Font("Arial", Font.PLAIN, 14));
+            gbc.gridx = 1;
+            panelPerfil.add(valor, gbc);
+            row++;
+        }
+    
+        // Separador
+        JSeparator separador = new JSeparator();
+        gbc.gridx = 0;
+        gbc.gridy = row++;
         gbc.gridwidth = 2;
-        panelPerfil.add(tituloBio, gbc);
-    
-        // Campos biográficos
-        gbc.gridwidth = 1; // Restablecemos a una columna por campo
-        gbc.gridy++;
-        gbc.gridx = 0;
-        panelPerfil.add(new JLabel("Correo Electrónico:"), gbc);
-        gbc.gridx = 1;
-        panelPerfil.add(new JLabel("usuario@email.com"), gbc); // Este valor lo puedes cambiar dinámicamente
-    
-        gbc.gridy++;
-        gbc.gridx = 0;
-        panelPerfil.add(new JLabel("Teléfono:"), gbc);
-        gbc.gridx = 1;
-        panelPerfil.add(new JLabel("123-456-7890"), gbc); // Este valor lo puedes cambiar dinámicamente
-    
-        gbc.gridy++;
-        gbc.gridx = 0;
-        panelPerfil.add(new JLabel("Fecha de Nacimiento:"), gbc);
-        gbc.gridx = 1;
-        panelPerfil.add(new JLabel("01/01/2000"), gbc); // Este valor lo puedes cambiar dinámicamente
-    
-        gbc.gridy++;
-        gbc.gridx = 0;
-        panelPerfil.add(new JLabel("Ciudadanía:"), gbc);
-        gbc.gridx = 1;
-        panelPerfil.add(new JLabel("Nacionalidad"), gbc); // Este valor lo puedes cambiar dinámicamente
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panelPerfil.add(separador, gbc);
     
         // Sección General
-        JLabel tituloGeneral = new JLabel("General");
-        tituloGeneral.setFont(new Font("Arial", Font.BOLD, 14));
+        JLabel tituloGeneral = new JLabel("Información General");
+        tituloGeneral.setFont(new Font("Arial", Font.BOLD, 16));
         tituloGeneral.setForeground(COLOR_NARANJA);
-        gbc.gridy++;
-        gbc.gridwidth = 2;
-        gbc.gridx = 0;
+        gbc.gridy = row++;
         panelPerfil.add(tituloGeneral, gbc);
     
-        // Campos generales
+        // Campos Generales
+        String[][] camposGenerales = {
+            {"Nivel:", "Estudiante"},
+            {"Clase:", comboCarrera.getSelectedItem() != null ? comboCarrera.getSelectedItem().toString() : "No seleccionado"},
+            {"Estatus:", "Activo"}
+        };
+    
         gbc.gridwidth = 1;
-        gbc.gridy++;
-        gbc.gridx = 0;
-        panelPerfil.add(new JLabel("Estatus:"), gbc);
-        gbc.gridx = 1;
-        panelPerfil.add(new JLabel("Activo"), gbc); // Este valor lo puedes cambiar dinámicamente
+        for (String[] campo : camposGenerales) {
+            // Label
+            JLabel label = new JLabel(campo[0]);
+            styleLabel(label);
+            gbc.gridx = 0;
+            gbc.gridy = row;
+            panelPerfil.add(label, gbc);
     
-        gbc.gridy++;
-        gbc.gridx = 0;
-        panelPerfil.add(new JLabel("Clase:"), gbc);
-        gbc.gridx = 1;
-        panelPerfil.add(new JLabel("A1"), gbc); // Este valor lo puedes cambiar dinámicamente
+            // Valor
+            JLabel valor = new JLabel(campo[1]);
+            valor.setFont(new Font("Arial", Font.PLAIN, 14));
+            gbc.gridx = 1;
+            panelPerfil.add(valor, gbc);
+            row++;
+        }
     
-        gbc.gridy++;
-        gbc.gridx = 0;
-        panelPerfil.add(new JLabel("Nivel:"), gbc);
-        gbc.gridx = 1;
-        panelPerfil.add(new JLabel("Avanzado"), gbc); // Este valor lo puedes cambiar dinámicamente
+        // Añadir el panel a un JScrollPane para permitir scroll si es necesario
+        JScrollPane scrollPane = new JScrollPane(panelPerfil);
+        scrollPane.setBackground(COLOR_FONDO);
+        scrollPane.setBorder(null);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
     
-        // Agregar el panel al contenedor principal (suponiendo que ya tienes un contenedor principal)
-        // Asegúrate de que 'panelPerfil' sea añadido al panel principal, algo como:
-        // add(panelPerfil);
+        // Actualizar la pestaña de perfil en el TabbedPane
+        tabbedPane.setComponentAt(2, scrollPane);
+        
     }
     
 
