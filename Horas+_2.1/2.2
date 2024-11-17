@@ -22,6 +22,8 @@ public class HorasLibresUNABApp extends JFrame implements ActionListener {
     private JPanel panelPrincipal, panelLogin;
     private JLabel labelBienvenida;
     private JLabel lblHorasTotales;
+    private JLabel lbTotalHorasTexto;
+    private JLabel lbTotalHorasValor;
 
     // Colores personalizados
     private static final Color COLOR_NARANJA = new Color(255, 140, 0);
@@ -275,6 +277,30 @@ private void agregarNuevoEvento(JTextArea areaEventos) {
         panelPrincipal = new JPanel(new BorderLayout());
         panelPrincipal.setBackground(COLOR_FONDO);
         
+        // Panel para mostrar horas totales
+        JPanel panelHorasTotales = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        panelHorasTotales.setBackground(COLOR_FONDO);
+        
+        // Inicializar las etiquetas
+        lbTotalHorasTexto = new JLabel("Total Horas Acumuladas: ");
+        lbTotalHorasTexto.setFont(new Font("Arial", Font.BOLD, 16));
+        lbTotalHorasTexto.setForeground(COLOR_NARANJA);
+        
+        lbTotalHorasValor = new JLabel("0");
+        lbTotalHorasValor.setFont(new Font("Arial", Font.BOLD, 16));
+        lbTotalHorasValor.setForeground(Color.BLACK);
+        
+        // Panel con borde para el contador
+        JPanel panelContadorHoras = new JPanel();
+        panelContadorHoras.setBackground(Color.WHITE);
+        panelContadorHoras.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(COLOR_NARANJA, 2),
+            BorderFactory.createEmptyBorder(5, 10, 5, 10)
+        ));
+        
+        panelContadorHoras.add(lbTotalHorasTexto);
+        panelContadorHoras.add(lbTotalHorasValor);
+        panelHorasTotales.add(panelContadorHoras);
 
         // Panel para los campos de entrada
         JPanel panelEntrada = new JPanel(new GridBagLayout());
@@ -393,12 +419,15 @@ private void agregarNuevoEvento(JTextArea areaEventos) {
         // Agregar todo al panel principal
         JPanel panelNorte = new JPanel(new BorderLayout());
         panelNorte.setBackground(COLOR_FONDO);
+        panelNorte.add(panelHorasTotales, BorderLayout.NORTH);
         panelNorte.add(panelEntrada, BorderLayout.CENTER);
         panelNorte.add(panelBotones, BorderLayout.SOUTH);
 
         panelPrincipal.add(panelNorte, BorderLayout.NORTH);
         panelPrincipal.add(scrollPane, BorderLayout.CENTER);
         panelPrincipal.add(panelPromedios, BorderLayout.SOUTH);
+
+        actualizarHorasTotales();
 
         // Agregar listeners
         botonAgregarEvento.addActionListener(this);
@@ -409,7 +438,13 @@ private void agregarNuevoEvento(JTextArea areaEventos) {
         botonPromedioMes.addActionListener(this);
         botonPromedioAnio.addActionListener(this);
     }
-
+    private void actualizarHorasTotales() {
+    int horasTotales = 0;
+    for (Integer horas : horasPorUsuario.values()) {
+        horasTotales += horas;
+    }
+    lbTotalHorasValor.setText(String.valueOf(horasTotales));
+}
     private void inicializarPanelPerfil() {
         JPanel panelPerfil = new JPanel(new GridBagLayout());
         panelPerfil.setBackground(COLOR_FONDO);
@@ -456,7 +491,7 @@ private void agregarNuevoEvento(JTextArea areaEventos) {
         
         
         JPanel PanelPerfil = new JPanel(new GridBagLayout());
-        
+
         // Separador
         JSeparator separador = new JSeparator();
         gbc.gridx = 0;
@@ -677,34 +712,26 @@ private void agregarNuevoEvento(JTextArea areaEventos) {
     private void registrarHoras() {
         try {
             int horas = Integer.parseInt(campoHorasLibres.getText());
-            String evento = (String) comboEvento.getSelectedItem();
-            
-            if (nombreActual != null && evento != null) {
+            if (nombreActual != null) {
                 int horasActuales = horasPorUsuario.getOrDefault(nombreActual, 0);
-                int HorasTotales = horasActuales + horas;
                 horasPorUsuario.put(nombreActual, horasActuales + horas);
-                guardarDatos();
                 
-                areaResultado.append(String.format(
-                    "Registradas %d horas para el evento '%s'\n",
-                    horas, evento));
-                    areaResultado.append(String.format("Horas totales: %d\n", 
-                    HorasTotales));
-    
+                // Actualizar el contador
+                actualizarHorasTotales();
+                
                 campoHorasLibres.setText("");
-    
-                // Actualizar el JLabel para mostrar las horas totales
-                int horasTotales = horasPorUsuario.get(nombreActual);
-                lblHorasTotales.setText("Horas Libres: " + horasTotales);
+                JOptionPane.showMessageDialog(this, 
+                    "Horas registradas correctamente.\nTotal de horas: " + (horasActuales + horas), 
+                    "Éxito", 
+                    JOptionPane.INFORMATION_MESSAGE);
             }
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this,
-                "Por favor ingrese un número válido de horas",
-                "Error",
+            JOptionPane.showMessageDialog(this, 
+                "Por favor ingrese un número válido", 
+                "Error", 
                 JOptionPane.ERROR_MESSAGE);
         }
     }
-    
 
     private void exportarDatos() {
         if (nombreActual == null) return;
