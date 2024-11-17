@@ -106,10 +106,13 @@ public class HorasLibresUNABApp extends JFrame implements ActionListener {
         // Inicializar paneles
         inicializarPanelLogin();
         inicializarPanelPrincipal();
+        inicializarPanelPerfil();
+        
         
         // Crear los paneles de las nuevas pestañas
         JPanel panelPerfil = new JPanel(new BorderLayout());
         JPanel panelEventos = new JPanel(new BorderLayout());
+        
 
         // Agregar paneles al TabbedPane
         tabbedPane.addTab("Inicio de Sesión", crearPanelConPadding(panelLogin));
@@ -122,6 +125,8 @@ public class HorasLibresUNABApp extends JFrame implements ActionListener {
         
         // Deshabilitar la pestaña del sistema hasta que se inicie sesión
         tabbedPane.setEnabledAt(1, false);
+        tabbedPane.setEnabledAt(2, false); 
+        tabbedPane.setEnabledAt(3, false); 
         
         
         add(tabbedPane, BorderLayout.CENTER);
@@ -271,6 +276,7 @@ private void crearPanelPerfil() {
     private void inicializarPanelPrincipal() {
         panelPrincipal = new JPanel(new BorderLayout());
         panelPrincipal.setBackground(COLOR_FONDO);
+        
 
         // Panel para los campos de entrada
         JPanel panelEntrada = new JPanel(new GridBagLayout());
@@ -287,15 +293,25 @@ private void crearPanelPerfil() {
         JLabel lblSemestre = new JLabel("Semestre:");
          
         // Crear el JLabel para mostrar las horas totales registradas
-    lblHorasTotales = new JLabel("Horas Libres: 0");
-    lblHorasTotales.setFont(new Font("Arial", Font.PLAIN, 14));
-    panelPrincipal.add(lblHorasTotales, BorderLayout.SOUTH);
+        lblHorasTotales = new JLabel("Horas Libres: 0");
+        lblHorasTotales.setFont(new Font("Arial", Font.PLAIN, 14));
+        panelPrincipal.add(lblHorasTotales, BorderLayout.SOUTH);
+
+         // Títulos de las secciones
+        JLabel labelBio = new JLabel("Biográfica");
+        labelBio.setFont(new Font("Serif", Font.BOLD | Font.ITALIC, 16));
+        labelBio.setForeground(COLOR_NARANJA);
+
+        JLabel labelGeneral = new JLabel("General");
+        labelGeneral.setFont(new Font("Serif", Font.BOLD | Font.ITALIC, 16));
+        labelGeneral.setForeground(COLOR_NARANJA);
 
         styleLabel(lblHoras);
         styleLabel(lblEvento);
         styleLabel(lblNuevoEvento);
         styleLabel(lblCarrera);
         styleLabel(lblSemestre);
+        
 
         campoHorasLibres = new JTextField(10);
         campoNuevoEvento = new JTextField(15);
@@ -351,6 +367,7 @@ private void crearPanelPerfil() {
         panelEntrada.add(lblSemestre, gbc);
         gbc.gridx = 1;
         panelEntrada.add(comboSemestres, gbc);
+    
 
         // Panel para botones
         JPanel panelBotones = new JPanel(new FlowLayout());
@@ -394,6 +411,98 @@ private void crearPanelPerfil() {
         botonPromedioMes.addActionListener(this);
         botonPromedioAnio.addActionListener(this);
     }
+
+    private void inicializarPanelPerfil() {
+        // Crear el panel con GridBagLayout
+        JPanel panelPerfil = new JPanel(new GridBagLayout());
+        panelPerfil.setBackground(COLOR_FONDO);
+    
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
+    
+        // Imagen de perfil
+        JLabel imagenPerfil = new JLabel();
+        imagenPerfil.setPreferredSize(new Dimension(100, 100));
+        imagenPerfil.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2; // Ocupa dos columnas
+        panelPerfil.add(imagenPerfil, gbc);
+    
+        // Espaciado vertical
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        panelPerfil.add(Box.createVerticalStrut(20), gbc);
+    
+        // Biográfica
+        JLabel tituloBio = new JLabel("Biográfica");
+        tituloBio.setFont(new Font("Arial", Font.BOLD, 14));
+        tituloBio.setForeground(COLOR_NARANJA);
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        panelPerfil.add(tituloBio, gbc);
+    
+        // Campos de información personal
+        gbc.gridwidth = 1; // Restablecemos a una columna por campo
+        gbc.gridy++;
+        gbc.gridx = 0;
+        panelPerfil.add(new JLabel("Correo Electrónico:"), gbc);
+        gbc.gridx = 1;
+        panelPerfil.add(new JLabel("usuario@email.com"), gbc);
+    
+        gbc.gridy++;
+        gbc.gridx = 0;
+        panelPerfil.add(new JLabel("Teléfono:"), gbc);
+        gbc.gridx = 1;
+        panelPerfil.add(new JLabel("123-456-7890"), gbc);
+    
+        gbc.gridy++;
+        gbc.gridx = 0;
+        panelPerfil.add(new JLabel("Fecha De Nacimiento:"), gbc);
+        gbc.gridx = 1;
+        panelPerfil.add(new JLabel("01/01/2000"), gbc);
+    
+        gbc.gridy++;
+        gbc.gridx = 0;
+        panelPerfil.add(new JLabel("Ciudadanía:"), gbc);
+        gbc.gridx = 1;
+        panelPerfil.add(new JLabel("Nacionalidad"), gbc);
+    
+        // Sección General
+        JLabel tituloGeneral = new JLabel("General");
+        tituloGeneral.setFont(new Font("Arial", Font.BOLD, 14));
+        tituloGeneral.setForeground(COLOR_NARANJA);
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        gbc.gridx = 0;
+        panelPerfil.add(tituloGeneral, gbc);
+    
+        // Campos adicionales
+        gbc.gridwidth = 1;
+        gbc.gridy++;
+        gbc.gridx = 0;
+        panelPerfil.add(new JLabel("Nivel:"), gbc);
+        gbc.gridx = 1;
+        panelPerfil.add(new JLabel("Avanzado"), gbc);
+    
+        gbc.gridy++;
+        gbc.gridx = 0;
+        panelPerfil.add(new JLabel("Clase:"), gbc);
+        gbc.gridx = 1;
+        panelPerfil.add(new JLabel("A1"), gbc);
+    
+        gbc.gridy++;
+        gbc.gridx = 0;
+        panelPerfil.add(new JLabel("Estatus:"), gbc);
+        gbc.gridx = 1;
+        panelPerfil.add(new JLabel("Activo"), gbc);
+    
+        
+        tabbedPane.setComponentAt(2, panelPerfil); 
+    }
+    
 
     private void styleLabel(JLabel label) {
         label.setFont(new Font("Arial", Font.BOLD, 14));
@@ -497,6 +606,8 @@ private void crearPanelPerfil() {
             usuariosConocidos.get(usuario).equals(contrasena)) {
             nombreActual = usuario;
             tabbedPane.setEnabledAt(1, true);
+            tabbedPane.setEnabledAt(2, true); 
+            tabbedPane.setEnabledAt(3, true); 
             tabbedPane.setSelectedIndex(1);
             labelBienvenida.setText("Bienvenid@, " + usuario);
             labelBienvenida.setVisible(true);
@@ -566,12 +677,16 @@ private void crearPanelPerfil() {
             
             if (nombreActual != null && evento != null) {
                 int horasActuales = horasPorUsuario.getOrDefault(nombreActual, 0);
+                int HorasTotales = horasActuales + horas;
                 horasPorUsuario.put(nombreActual, horasActuales + horas);
                 guardarDatos();
                 
                 areaResultado.append(String.format(
                     "Registradas %d horas para el evento '%s'\n",
                     horas, evento));
+                    areaResultado.append(String.format("Horas totales: %d\n", 
+                    HorasTotales));
+    
                 campoHorasLibres.setText("");
     
                 // Actualizar el JLabel para mostrar las horas totales
