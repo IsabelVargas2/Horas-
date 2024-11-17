@@ -100,7 +100,6 @@ public class HorasLibresUNABApp extends JFrame implements ActionListener {
         labelBienvenida.setFont(new Font("Arial", Font.BOLD, 18));
         labelBienvenida.setForeground(COLOR_NARANJA);
         labelBienvenida.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-        add(labelBienvenida, BorderLayout.NORTH);
         labelBienvenida.setVisible(false);
 
         // Inicializar paneles
@@ -128,10 +127,10 @@ public class HorasLibresUNABApp extends JFrame implements ActionListener {
         tabbedPane.setEnabledAt(2, false); 
         tabbedPane.setEnabledAt(3, false); 
         
-        
+        add(labelBienvenida, BorderLayout.NORTH);
         add(tabbedPane, BorderLayout.CENTER);
     }
-private void crearPanelEventos() {
+    private void crearPanelEventos() {
     // Crear un panel para los eventos
     JPanel panelEventos = new JPanel(new BorderLayout());
 
@@ -171,7 +170,7 @@ private void agregarNuevoEvento(JTextArea areaEventos) {
         JOptionPane.showMessageDialog(this, "El evento ya existe o está vacío", "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
-private void crearPanelPerfil() {
+    private void crearPanelPerfil() {
     // Comprobamos que el usuario esté logueado antes de mostrar el perfil
     if (nombreActual == null) return;
 
@@ -436,7 +435,7 @@ private void crearPanelPerfil() {
         gbc.gridwidth = 2;
         panelPerfil.add(Box.createVerticalStrut(20), gbc);
     
-        // Biográfica
+        // Sección Biográfica
         JLabel tituloBio = new JLabel("Biográfica");
         tituloBio.setFont(new Font("Arial", Font.BOLD, 14));
         tituloBio.setForeground(COLOR_NARANJA);
@@ -444,31 +443,31 @@ private void crearPanelPerfil() {
         gbc.gridwidth = 2;
         panelPerfil.add(tituloBio, gbc);
     
-        // Campos de información personal
+        // Campos biográficos
         gbc.gridwidth = 1; // Restablecemos a una columna por campo
         gbc.gridy++;
         gbc.gridx = 0;
         panelPerfil.add(new JLabel("Correo Electrónico:"), gbc);
         gbc.gridx = 1;
-        panelPerfil.add(new JLabel("usuario@email.com"), gbc);
+        panelPerfil.add(new JLabel("usuario@email.com"), gbc); // Este valor lo puedes cambiar dinámicamente
     
         gbc.gridy++;
         gbc.gridx = 0;
         panelPerfil.add(new JLabel("Teléfono:"), gbc);
         gbc.gridx = 1;
-        panelPerfil.add(new JLabel("123-456-7890"), gbc);
+        panelPerfil.add(new JLabel("123-456-7890"), gbc); // Este valor lo puedes cambiar dinámicamente
     
         gbc.gridy++;
         gbc.gridx = 0;
-        panelPerfil.add(new JLabel("Fecha De Nacimiento:"), gbc);
+        panelPerfil.add(new JLabel("Fecha de Nacimiento:"), gbc);
         gbc.gridx = 1;
-        panelPerfil.add(new JLabel("01/01/2000"), gbc);
+        panelPerfil.add(new JLabel("01/01/2000"), gbc); // Este valor lo puedes cambiar dinámicamente
     
         gbc.gridy++;
         gbc.gridx = 0;
         panelPerfil.add(new JLabel("Ciudadanía:"), gbc);
         gbc.gridx = 1;
-        panelPerfil.add(new JLabel("Nacionalidad"), gbc);
+        panelPerfil.add(new JLabel("Nacionalidad"), gbc); // Este valor lo puedes cambiar dinámicamente
     
         // Sección General
         JLabel tituloGeneral = new JLabel("General");
@@ -479,28 +478,29 @@ private void crearPanelPerfil() {
         gbc.gridx = 0;
         panelPerfil.add(tituloGeneral, gbc);
     
-        // Campos adicionales
+        // Campos generales
         gbc.gridwidth = 1;
         gbc.gridy++;
         gbc.gridx = 0;
-        panelPerfil.add(new JLabel("Nivel:"), gbc);
+        panelPerfil.add(new JLabel("Estatus:"), gbc);
         gbc.gridx = 1;
-        panelPerfil.add(new JLabel("Avanzado"), gbc);
+        panelPerfil.add(new JLabel("Activo"), gbc); // Este valor lo puedes cambiar dinámicamente
     
         gbc.gridy++;
         gbc.gridx = 0;
         panelPerfil.add(new JLabel("Clase:"), gbc);
         gbc.gridx = 1;
-        panelPerfil.add(new JLabel("A1"), gbc);
+        panelPerfil.add(new JLabel("A1"), gbc); // Este valor lo puedes cambiar dinámicamente
     
         gbc.gridy++;
         gbc.gridx = 0;
-        panelPerfil.add(new JLabel("Estatus:"), gbc);
+        panelPerfil.add(new JLabel("Nivel:"), gbc);
         gbc.gridx = 1;
-        panelPerfil.add(new JLabel("Activo"), gbc);
+        panelPerfil.add(new JLabel("Avanzado"), gbc); // Este valor lo puedes cambiar dinámicamente
     
-        
-        
+        // Agregar el panel al contenedor principal (suponiendo que ya tienes un contenedor principal)
+        // Asegúrate de que 'panelPerfil' sea añadido al panel principal, algo como:
+        // add(panelPerfil);
     }
     
 
