@@ -94,35 +94,33 @@ public class HorasLibresUNABApp extends JFrame implements ActionListener {
         tabbedPane = new JTabbedPane();
         tabbedPane.setBackground(COLOR_FONDO);
         tabbedPane.setForeground(COLOR_TEXTO);
-
+    
         // Panel de bienvenida
         labelBienvenida = new JLabel("Bienvenido al Sistema de Horas Libres UNAB", SwingConstants.CENTER);
         labelBienvenida.setFont(new Font("Arial", Font.BOLD, 18));
         labelBienvenida.setForeground(COLOR_NARANJA);
         labelBienvenida.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         labelBienvenida.setVisible(false);
-
-        // Inicializar paneles
+    
+        // Inicializar paneles principales
         inicializarPanelLogin();
         inicializarPanelPrincipal();
-        inicializarPanelPerfil();
         
-        
-        // Crear los paneles de las nuevas pestañas
-        JPanel panelPerfil = new JPanel(new BorderLayout());
-        JPanel panelEventos = new JPanel(new BorderLayout());
-        
-
-        // Agregar paneles al TabbedPane
+        // Crear paneles temporales para perfil y eventos
+        JPanel panelPerfilTemp = new JPanel();
+        JPanel panelEventosTemp = new JPanel();
+    
+        // Agregar todas las pestañas al TabbedPane con paneles temporales
         tabbedPane.addTab("Inicio de Sesión", crearPanelConPadding(panelLogin));
         tabbedPane.addTab("Sistema de Horas", crearPanelConPadding(panelPrincipal));
-        tabbedPane.addTab("Perfil de Usuario", panelPerfil);
-        tabbedPane.addTab("Eventos", panelEventos);
-        // Crear los paneles para el perfil de usuario y eventos
-        crearPanelPerfil();
+        tabbedPane.addTab("Perfil de Usuario", panelPerfilTemp);
+        tabbedPane.addTab("Eventos", panelEventosTemp);
+    
+        // Inicializar el contenido real de los paneles
+        inicializarPanelPerfil();
         crearPanelEventos();
         
-        // Deshabilitar la pestaña del sistema hasta que se inicie sesión
+        // Deshabilitar pestañas hasta el login
         tabbedPane.setEnabledAt(1, false);
         tabbedPane.setEnabledAt(2, false); 
         tabbedPane.setEnabledAt(3, false); 
@@ -130,6 +128,7 @@ public class HorasLibresUNABApp extends JFrame implements ActionListener {
         add(labelBienvenida, BorderLayout.NORTH);
         add(tabbedPane, BorderLayout.CENTER);
     }
+    
     private void crearPanelEventos() {
     // Crear un panel para los eventos
     JPanel panelEventos = new JPanel(new BorderLayout());
@@ -454,7 +453,10 @@ private void agregarNuevoEvento(JTextArea areaEventos) {
             panelPerfil.add(valor, gbc);
             row++;
         }
-    
+        
+        
+        JPanel PanelPerfil = new JPanel(new GridBagLayout());
+        
         // Separador
         JSeparator separador = new JSeparator();
         gbc.gridx = 0;
