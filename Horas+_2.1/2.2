@@ -122,6 +122,8 @@ public class HorasLibresUNABApp extends JFrame implements ActionListener {
         inicializarPanelPerfil();
         crearPanelEventos();
         
+        agregarLogotipo();
+
         // Deshabilitar pestañas hasta el login
         tabbedPane.setEnabledAt(1, false);
         tabbedPane.setEnabledAt(2, false); 
@@ -129,6 +131,25 @@ public class HorasLibresUNABApp extends JFrame implements ActionListener {
         
         add(labelBienvenida, BorderLayout.NORTH);
         add(tabbedPane, BorderLayout.CENTER);
+    }
+    private void agregarLogotipo() {
+        // Cargar la imagen
+        ImageIcon icono = new ImageIcon("ruta/a/tu/imagen/logo.png"); // Asegúrate de que la ruta sea correcta
+    
+        // Crear un JLabel con el ImageIcon
+        JLabel logotipoLabel = new JLabel(icono);
+    
+        // Ajustar tamaño si es necesario
+        Image imagen = icono.getImage(); // Convertir la imagen a un objeto Image
+        Image imagenEscalada = imagen.getScaledInstance(150, 150, Image.SCALE_SMOOTH); // Redimensionar a 150x150 píxeles
+        icono = new ImageIcon(imagenEscalada);
+        logotipoLabel.setIcon(icono);
+    
+        // Añadir el JLabel al panel de bienvenida o al panel donde desees mostrar el logotipo
+        panelLogin.add(logotipoLabel, BorderLayout.NORTH); // En este caso, lo agregamos al panel de login
+    
+        // Si lo deseas en otro panel, por ejemplo en el panel principal:
+        // panelPrincipal.add(logotipoLabel, BorderLayout.NORTH);
     }
     
     private void crearPanelEventos() {
