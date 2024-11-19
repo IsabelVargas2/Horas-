@@ -158,7 +158,12 @@ public class HorasLibresUNABApp extends JFrame implements ActionListener {
     private void crearPanelEventos() {
         JPanel panelEventos = new JPanel(new BorderLayout());
         
-        // Crear los datos y las columnas para el JTable
+        // Panel superior para eventos actuales
+        JPanel panelEventosActuales = new JPanel(new BorderLayout());
+        JLabel labelEventosActuales = new JLabel("Eventos Actuales", SwingConstants.CENTER);
+        labelEventosActuales.setFont(new Font("Arial", Font.BOLD, 14));
+        
+        // Crear los datos y las columnas para el JTable de eventos actuales
         String[] columnNames = {"Nombre del Evento", "Duración (Horas)"};
         DefaultTableModel modelEventos = new DefaultTableModel(columnNames, 0);
         JTable tablaEventos = new JTable(modelEventos);
@@ -169,8 +174,34 @@ public class HorasLibresUNABApp extends JFrame implements ActionListener {
             modelEventos.addRow(new Object[]{evento.getKey(), evento.getValue()});
         }
     
-        panelEventos.add(scrollPaneEventos, BorderLayout.CENTER);
-        tabbedPane.setComponentAt(3, panelEventos); // La pestaña "Eventos" es la 4ta
+        panelEventosActuales.add(labelEventosActuales, BorderLayout.NORTH);
+        panelEventosActuales.add(scrollPaneEventos, BorderLayout.CENTER);
+    
+        // Panel inferior para próximos eventos
+        JPanel panelProximosEventos = new JPanel(new BorderLayout());
+        JLabel labelProximosEventos = new JLabel("Próximos Eventos", SwingConstants.CENTER);
+        labelProximosEventos.setFont(new Font("Arial", Font.BOLD, 14));
+        
+        // Crear tabla para próximos eventos
+        String[] columnasProximos = {"Evento", "Fecha", "Hora"};
+        DefaultTableModel modelProximos = new DefaultTableModel(columnasProximos, 0);
+        JTable tablaProximos = new JTable(modelProximos);
+        JScrollPane scrollPaneProximos = new JScrollPane(tablaProximos);
+    
+        // Aquí puedes agregar algunos eventos de ejemplo
+        modelProximos.addRow(new Object[]{"Reunión de estudiantes", "20/11/2024", "10:00 AM"});
+        modelProximos.addRow(new Object[]{"Taller de programación", "22/11/2024", "2:00 PM"});
+        
+        panelProximosEventos.add(labelProximosEventos, BorderLayout.NORTH);
+        panelProximosEventos.add(scrollPaneProximos, BorderLayout.CENTER);
+    
+        // Crear un JSplitPane para dividir las dos secciones
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+                panelEventosActuales, panelProximosEventos);
+        splitPane.setResizeWeight(0.5); // Divide el espacio equitativamente
+        
+        panelEventos.add(splitPane, BorderLayout.CENTER);
+        tabbedPane.setComponentAt(3, panelEventos);
     }
 private void mostrarEventos(JTextArea areaEventos) {
     areaEventos.setText("");  // Limpiar el área de texto
