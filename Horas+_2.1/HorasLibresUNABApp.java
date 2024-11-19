@@ -1,8 +1,12 @@
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.HashMap;
+import java.util.Map;
+import javax.swing.*;
+import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableModel;
+
 
 public class HorasLibresUNABApp extends JFrame implements ActionListener {
     private JTextField campoHorasLibres, campoNuevoEvento, campoUsuario;
@@ -20,6 +24,10 @@ public class HorasLibresUNABApp extends JFrame implements ActionListener {
     private JTabbedPane tabbedPane;
     private JPanel panelPrincipal, panelLogin;
     private JLabel labelBienvenida;
+    private JLabel lblHorasTotales;
+    private JLabel lbTotalHorasTexto;
+    private JLabel lbTotalHorasValor;
+
 
     // Colores personalizados
     private static final Color COLOR_NARANJA = new Color(255, 140, 0);
@@ -92,28 +100,217 @@ public class HorasLibresUNABApp extends JFrame implements ActionListener {
         tabbedPane = new JTabbedPane();
         tabbedPane.setBackground(COLOR_FONDO);
         tabbedPane.setForeground(COLOR_TEXTO);
-
+    
         // Panel de bienvenida
         labelBienvenida = new JLabel("Bienvenido al Sistema de Horas Libres UNAB", SwingConstants.CENTER);
         labelBienvenida.setFont(new Font("Arial", Font.BOLD, 18));
         labelBienvenida.setForeground(COLOR_NARANJA);
         labelBienvenida.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-        add(labelBienvenida, BorderLayout.NORTH);
         labelBienvenida.setVisible(false);
-
-        // Inicializar paneles
+    
+        // Inicializar paneles principales
         inicializarPanelLogin();
         inicializarPanelPrincipal();
-
-        // Agregar paneles al TabbedPane
+        
+        // Crear paneles temporales para perfil y eventos
+        JPanel panelPerfilTemp = new JPanel();
+        JPanel panelEventosTemp = new JPanel();
+    
+        // Agregar todas las pestañas al TabbedPane con paneles temporales
         tabbedPane.addTab("Inicio de Sesión", crearPanelConPadding(panelLogin));
         tabbedPane.addTab("Sistema de Horas", crearPanelConPadding(panelPrincipal));
+        tabbedPane.addTab("Perfil de Usuario", panelPerfilTemp);
+        tabbedPane.addTab("Eventos", panelEventosTemp);
+    
+        // Inicializar el contenido real de los paneles
+        inicializarPanelPerfil();
+        crearPanelEventos();
         
-        // Deshabilitar la pestaña del sistema hasta que se inicie sesión
-        tabbedPane.setEnabledAt(1, false);
+        agregarLogotipo();
 
+        // Deshabilitar pestañas hasta el login
+        tabbedPane.setEnabledAt(1, false);
+        tabbedPane.setEnabledAt(2, false); 
+        tabbedPane.setEnabledAt(3, false); 
+        
+        add(labelBienvenida, BorderLayout.NORTH);
         add(tabbedPane, BorderLayout.CENTER);
     }
+    private void agregarLogotipo() {
+        // Cargar la imagen
+        ImageIcon icono = new ImageIcon("imagenes/logo.png"); // Asegúrate de que la ruta sea correcta
+    
+        // Crear un JLabel con el ImageIcon
+        JLabel logotipoLabel = new JLabel(icono);
+    
+        // Ajustar tamaño si es necesario
+        Image imagen = icono.getImage(); // Convertir la imagen a un objeto Image
+        Image imagenEscalada = imagen.getScaledInstance(150, 150, Image.SCALE_SMOOTH); // Redimensionar a 150x150 píxeles
+        icono = new ImageIcon(imagenEscalada);
+        logotipoLabel.setIcon(icono);
+    
+        // Añadir el JLabel al panel de bienvenida o al panel donde desees mostrar el logotipo
+        panelLogin.add(logotipoLabel, BorderLayout.NORTH); // En este caso, lo agregamos al panel de login
+    
+        // Si lo deseas en otro panel, por ejemplo en el panel principal:
+        // panelPrincipal.add(logotipoLabel, BorderLayout.NORTH);
+    }
+    
+    private void crearPanelEventos() {
+    JPanel panelEventos = new JPanel(new BorderLayout(10, 10));
+    panelEventos.setBackground(COLOR_FONDO);
+    panelEventos.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+    // Panel superior para título
+    JPanel panelTitulo = new JPanel(new FlowLayout(FlowLayout.CENTER));
+    panelTitulo.setBackground(COLOR_FONDO);
+    JLabel titulo = new JLabel("Catálogo de Eventos Disponibles");
+    titulo.setFont(new Font("Arial", Font.BOLD, 20));
+    titulo.setForeground(COLOR_NARANJA);
+    panelTitulo.add(titulo);
+
+    // Crear los datos y las columnas para el JTable
+    String[] columnNames = {"Nombre del Evento", "Horas Otorgadas", "Horario Disponible", "Ubicación", "Cupos"};
+    DefaultTableModel modelEventos = new DefaultTableModel(columnNames, 0) {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false; // Hace que la tabla no sea editable
+        }
+    };
+
+    // Agregar datos de ejemplo (estos pueden ser cargados desde una base de datos)
+    Object[][] eventosData = {
+        {"Voluntariado Hospital", 4, "Lunes a Viernes 8:00 AM - 12:00 PM", "Fosunab", "20"},
+        {"Tutoría Académica", 2, "Martes y Jueves 2:00 PM - 4:00 PM", "Biblioteca ", "15"},
+        {"Apoyo Administrativo", 3, "Miércoles 9:00 AM - 12:00 PM", "Auditorio Mayor", "10"},
+        {"Proyecto Social", 5, "Sábados 8:00 AM - 1:00 PM", "CSU", "25"},
+        {"Investigación", 6, "Flexible", "Laboratorios UNAB", "8"},
+        {"Mentor Estudiantil", 3, "Lunes y Miércoles 3:00 PM - 6:00 PM", "Salón de Estudios", "12"},
+        {"Apoyo Deportivo", 2, "Viernes 2:00 PM - 4:00 PM", "CSU", "15"},
+        {"Biblioteca", 4, "Lunes a Viernes 1:00 PM - 5:00 PM", "Biblioteca ", "6"}
+    };
+
+    // Agregar los datos a la tabla
+    for (Object[] evento : eventosData) {
+        modelEventos.addRow(evento);
+    }
+
+    // Crear y configurar la tabla
+    JTable tablaEventos = new JTable(modelEventos);
+    tablaEventos.setRowHeight(25);
+    tablaEventos.setFont(new Font("Arial", Font.PLAIN, 14));
+    tablaEventos.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
+    tablaEventos.getTableHeader().setBackground(COLOR_NARANJA);
+    tablaEventos.getTableHeader().setForeground(Color.BLACK);
+    tablaEventos.setSelectionBackground(COLOR_NARANJA_CLARO);
+    tablaEventos.setGridColor(Color.GRAY);
+    tablaEventos.setShowGrid(true);
+
+    // Configurar el ancho de las columnas
+    tablaEventos.getColumnModel().getColumn(0).setPreferredWidth(150); // Nombre
+    tablaEventos.getColumnModel().getColumn(1).setPreferredWidth(100); // Horas
+    tablaEventos.getColumnModel().getColumn(2).setPreferredWidth(200); // Horario
+    tablaEventos.getColumnModel().getColumn(3).setPreferredWidth(150); // Ubicación
+    tablaEventos.getColumnModel().getColumn(4).setPreferredWidth(100); // Cupos
+
+    // Crear panel de búsqueda
+    JPanel panelBusqueda = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelBusqueda.setBackground(COLOR_FONDO);
+    JLabel lblBuscar = new JLabel("Buscar evento: ");
+    lblBuscar.setFont(new Font("Arial", Font.BOLD, 14));
+    JTextField txtBuscar = new JTextField(20);
+    styleTextField(txtBuscar);
+    
+    JButton btnBuscar = new JButton("Buscar");
+    styleButton(btnBuscar);
+    
+    panelBusqueda.add(lblBuscar);
+    panelBusqueda.add(txtBuscar);
+    panelBusqueda.add(btnBuscar);
+
+    // Agregar funcionalidad de búsqueda
+    txtBuscar.getDocument().addDocumentListener(new DocumentListener() {
+        public void changedUpdate(DocumentEvent e) { filtrarTabla(); }
+        public void removeUpdate(DocumentEvent e) { filtrarTabla(); }
+        public void insertUpdate(DocumentEvent e) { filtrarTabla(); }
+
+        private void filtrarTabla() {
+            String texto = txtBuscar.getText().toLowerCase();
+            DefaultTableModel model = (DefaultTableModel) tablaEventos.getModel();
+            model.setRowCount(0); // Limpiar tabla
+
+            for (Object[] evento : eventosData) {
+                if (evento[0].toString().toLowerCase().contains(texto) ||
+                    evento[2].toString().toLowerCase().contains(texto) ||
+                    evento[3].toString().toLowerCase().contains(texto)) {
+                    model.addRow(evento);
+                }
+            }
+        }
+    });
+
+    // Agregar todo al panel principal
+    JScrollPane scrollPane = new JScrollPane(tablaEventos);
+    scrollPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+    panelEventos.add(panelTitulo, BorderLayout.NORTH);
+    panelEventos.add(panelBusqueda, BorderLayout.CENTER);
+    panelEventos.add(scrollPane, BorderLayout.SOUTH);
+
+    // Actualizar la pestaña de eventos en el TabbedPane
+    tabbedPane.setComponentAt(3, panelEventos);
+}
+
+
+    
+    private void mostrarEventos(JTextArea areaEventos) {
+        areaEventos.setText("");  // Limpiar el área de texto
+        for (Map.Entry<String, Integer> evento : eventosConocidos.entrySet()) {
+            areaEventos.append(String.format("Evento: %s - %d horas\n", evento.getKey(), evento.getValue()));
+        }
+    }
+private void agregarNuevoEvento(JTextField campoNombreEvento, JTextArea areaDescripcionEvento, DefaultTableModel modelEventos) {
+    String nombreEvento = campoNombreEvento.getText().trim();
+    String descripcionEvento = areaDescripcionEvento.getText().trim();
+
+    if (!nombreEvento.isEmpty() && !descripcionEvento.isEmpty() && !eventosConocidos.containsKey(nombreEvento)) {
+        eventosConocidos.put(nombreEvento, 0);  // Aquí agregas el evento al mapa
+        modelEventos.addRow(new Object[]{nombreEvento, descripcionEvento, 0});
+        campoNombreEvento.setText("");  // Limpiar el campo de nombre
+        areaDescripcionEvento.setText("");  // Limpiar la descripción
+    } else {
+        JOptionPane.showMessageDialog(this, "El evento o la descripción está vacío o ya existe", "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+    private void crearPanelPerfil() {
+    // Comprobamos que el usuario esté logueado antes de mostrar el perfil
+    if (nombreActual == null) return;
+
+    JPanel panelPerfil = new JPanel();
+    panelPerfil.setLayout(new GridLayout(4, 2));
+
+    JLabel lblNombre = new JLabel("Nombre:");
+    JLabel lblCarrera = new JLabel("Carrera:");
+    JLabel lblSemestre = new JLabel("Semestre:");
+    JLabel lblHorasLibres = new JLabel("Horas Libres:");
+
+    JLabel lblNombreValor = new JLabel(nombreActual);
+    JLabel lblCarreraValor = new JLabel((String) comboCarrera.getSelectedItem());
+    JLabel lblSemestreValor = new JLabel(String.valueOf(comboSemestres.getSelectedItem()));
+    JLabel lblHorasLibresValor = new JLabel(String.valueOf(horasPorUsuario.getOrDefault(nombreActual, 0)));
+
+    panelPerfil.add(lblNombre);
+    panelPerfil.add(lblNombreValor);
+    panelPerfil.add(lblCarrera);
+    panelPerfil.add(lblCarreraValor);
+    panelPerfil.add(lblSemestre);
+    panelPerfil.add(lblSemestreValor);
+    panelPerfil.add(lblHorasLibres);
+    panelPerfil.add(lblHorasLibresValor);
+
+    // Añadir el panel de perfil al panel principal de la pestaña
+    tabbedPane.setComponentAt(2, panelPerfil); // La pestaña "Perfil de Usuario" es la 3ra
+}
 
     private void inicializarPanelLogin() {
         panelLogin = new JPanel();
@@ -190,6 +387,31 @@ public class HorasLibresUNABApp extends JFrame implements ActionListener {
     private void inicializarPanelPrincipal() {
         panelPrincipal = new JPanel(new BorderLayout());
         panelPrincipal.setBackground(COLOR_FONDO);
+        
+        // Panel para mostrar horas totales
+        JPanel panelHorasTotales = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        panelHorasTotales.setBackground(COLOR_FONDO);
+        
+        // Inicializar las etiquetas
+        lbTotalHorasTexto = new JLabel("Total Horas Acumuladas: ");
+        lbTotalHorasTexto.setFont(new Font("Arial", Font.BOLD, 16));
+        lbTotalHorasTexto.setForeground(COLOR_NARANJA);
+        
+        lbTotalHorasValor = new JLabel("0");
+        lbTotalHorasValor.setFont(new Font("Arial", Font.BOLD, 16));
+        lbTotalHorasValor.setForeground(Color.BLACK);
+        
+        // Panel con borde para el contador
+        JPanel panelContadorHoras = new JPanel();
+        panelContadorHoras.setBackground(Color.WHITE);
+        panelContadorHoras.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(COLOR_NARANJA, 2),
+            BorderFactory.createEmptyBorder(5, 10, 5, 10)
+        ));
+        
+        panelContadorHoras.add(lbTotalHorasTexto);
+        panelContadorHoras.add(lbTotalHorasValor);
+        panelHorasTotales.add(panelContadorHoras);
 
         // Panel para los campos de entrada
         JPanel panelEntrada = new JPanel(new GridBagLayout());
@@ -204,12 +426,27 @@ public class HorasLibresUNABApp extends JFrame implements ActionListener {
         JLabel lblNuevoEvento = new JLabel("Nuevo Evento:");
         JLabel lblCarrera = new JLabel("Carrera:");
         JLabel lblSemestre = new JLabel("Semestre:");
+         
+        // Crear el JLabel para mostrar las horas totales registradas
+        lblHorasTotales = new JLabel("Horas Libres: 0");
+        lblHorasTotales.setFont(new Font("Arial", Font.PLAIN, 14));
+        panelPrincipal.add(lblHorasTotales, BorderLayout.SOUTH);
+
+         // Títulos de las secciones
+        JLabel labelBio = new JLabel("Biográfica");
+        labelBio.setFont(new Font("Serif", Font.BOLD | Font.ITALIC, 16));
+        labelBio.setForeground(COLOR_NARANJA);
+
+        JLabel labelGeneral = new JLabel("General");
+        labelGeneral.setFont(new Font("Serif", Font.BOLD | Font.ITALIC, 16));
+        labelGeneral.setForeground(COLOR_NARANJA);
 
         styleLabel(lblHoras);
         styleLabel(lblEvento);
         styleLabel(lblNuevoEvento);
         styleLabel(lblCarrera);
         styleLabel(lblSemestre);
+        
 
         campoHorasLibres = new JTextField(10);
         campoNuevoEvento = new JTextField(15);
@@ -265,6 +502,7 @@ public class HorasLibresUNABApp extends JFrame implements ActionListener {
         panelEntrada.add(lblSemestre, gbc);
         gbc.gridx = 1;
         panelEntrada.add(comboSemestres, gbc);
+    
 
         // Panel para botones
         JPanel panelBotones = new JPanel(new FlowLayout());
@@ -292,12 +530,15 @@ public class HorasLibresUNABApp extends JFrame implements ActionListener {
         // Agregar todo al panel principal
         JPanel panelNorte = new JPanel(new BorderLayout());
         panelNorte.setBackground(COLOR_FONDO);
+        panelNorte.add(panelHorasTotales, BorderLayout.NORTH);
         panelNorte.add(panelEntrada, BorderLayout.CENTER);
         panelNorte.add(panelBotones, BorderLayout.SOUTH);
 
         panelPrincipal.add(panelNorte, BorderLayout.NORTH);
         panelPrincipal.add(scrollPane, BorderLayout.CENTER);
         panelPrincipal.add(panelPromedios, BorderLayout.SOUTH);
+
+        actualizarHorasTotales();
 
         // Agregar listeners
         botonAgregarEvento.addActionListener(this);
@@ -308,6 +549,110 @@ public class HorasLibresUNABApp extends JFrame implements ActionListener {
         botonPromedioMes.addActionListener(this);
         botonPromedioAnio.addActionListener(this);
     }
+    private void actualizarHorasTotales() {
+    int horasTotales = 0;
+    for (Integer horas : horasPorUsuario.values()) {
+        horasTotales += horas;
+    }
+    lbTotalHorasValor.setText(String.valueOf(horasTotales));
+}
+    private void inicializarPanelPerfil() {
+        JPanel panelPerfil = new JPanel(new GridBagLayout());
+        panelPerfil.setBackground(COLOR_FONDO);
+        
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
+    
+        // Sección Biográfica
+        JLabel tituloBiografica = new JLabel("Información Biográfica");
+        tituloBiografica.setFont(new Font("Arial", Font.BOLD, 16));
+        tituloBiografica.setForeground(COLOR_NARANJA);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        panelPerfil.add(tituloBiografica, gbc);
+    
+        // Campos Biográficos
+        String[][] camposBiograficos = {
+            {"Correo:", "usuario@email.com"},
+            {"Fecha de Nacimiento:", "01/01/2000"},
+            {"Teléfono:", "+57 123456789"},
+            {"Ciudadanía:", "Colombiana"}
+        };
+    
+        gbc.gridwidth = 1;
+        int row = 1;
+        for (String[] campo : camposBiograficos) {
+            // Label
+            JLabel label = new JLabel(campo[0]);
+            styleLabel(label);
+            gbc.gridx = 0;
+            gbc.gridy = row;
+            panelPerfil.add(label, gbc);
+    
+            // Valor
+            JLabel valor = new JLabel(campo[1]);
+            valor.setFont(new Font("Arial", Font.PLAIN, 14));
+            gbc.gridx = 1;
+            panelPerfil.add(valor, gbc);
+            row++;
+        }
+        
+        
+        JPanel PanelPerfil = new JPanel(new GridBagLayout());
+
+        // Separador
+        JSeparator separador = new JSeparator();
+        gbc.gridx = 0;
+        gbc.gridy = row++;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panelPerfil.add(separador, gbc);
+    
+        // Sección General
+        JLabel tituloGeneral = new JLabel("Información General");
+        tituloGeneral.setFont(new Font("Arial", Font.BOLD, 16));
+        tituloGeneral.setForeground(COLOR_NARANJA);
+        gbc.gridy = row++;
+        panelPerfil.add(tituloGeneral, gbc);
+    
+        // Campos Generales
+        String[][] camposGenerales = {
+            {"Nivel:", "Estudiante"},
+            {"Clase:", comboCarrera.getSelectedItem() != null ? comboCarrera.getSelectedItem().toString() : "No seleccionado"},
+            {"Estatus:", "Activo"}
+        };
+    
+        gbc.gridwidth = 1;
+        for (String[] campo : camposGenerales) {
+            // Label
+            JLabel label = new JLabel(campo[0]);
+            styleLabel(label);
+            gbc.gridx = 0;
+            gbc.gridy = row;
+            panelPerfil.add(label, gbc);
+    
+            // Valor
+            JLabel valor = new JLabel(campo[1]);
+            valor.setFont(new Font("Arial", Font.PLAIN, 14));
+            gbc.gridx = 1;
+            panelPerfil.add(valor, gbc);
+            row++;
+        }
+    
+        // Añadir el panel a un JScrollPane para permitir scroll si es necesario
+        JScrollPane scrollPane = new JScrollPane(panelPerfil);
+        scrollPane.setBackground(COLOR_FONDO);
+        scrollPane.setBorder(null);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+    
+        // Actualizar la pestaña de perfil en el TabbedPane
+        tabbedPane.setComponentAt(2, scrollPane);
+        
+    }
+    
 
     private void styleLabel(JLabel label) {
         label.setFont(new Font("Arial", Font.BOLD, 14));
@@ -357,22 +702,29 @@ public class HorasLibresUNABApp extends JFrame implements ActionListener {
         JMenuBar menuBar = new JMenuBar();
         JMenu menuArchivo = new JMenu("Archivo");
         JMenu menuAyuda = new JMenu("Ayuda");
-
         JMenuItem menuItemSalir = new JMenuItem("Salir");
         JMenuItem menuItemAcerca = new JMenuItem("Acerca de");
-
+        
+        
+        
+        
         menuItemSalir.addActionListener(e -> System.exit(0));
         menuItemAcerca.addActionListener(e -> mostrarAcercaDe());
+        
 
         menuArchivo.add(menuItemSalir);
         menuAyuda.add(menuItemAcerca);
+        
 
         menuBar.add(menuArchivo);
         menuBar.add(menuAyuda);
+        
 
         setJMenuBar(menuBar);
     }
-
+   
+    
+    
     private void mostrarAcercaDe() {
         JOptionPane.showMessageDialog(this,
             "Sistema de Horas Libres UNAB\nVersión 1.0\n© 2024 UNAB",
@@ -411,6 +763,8 @@ public class HorasLibresUNABApp extends JFrame implements ActionListener {
             usuariosConocidos.get(usuario).equals(contrasena)) {
             nombreActual = usuario;
             tabbedPane.setEnabledAt(1, true);
+            tabbedPane.setEnabledAt(2, true); 
+            tabbedPane.setEnabledAt(3, true); 
             tabbedPane.setSelectedIndex(1);
             labelBienvenida.setText("Bienvenid@, " + usuario);
             labelBienvenida.setVisible(true);
@@ -476,22 +830,23 @@ public class HorasLibresUNABApp extends JFrame implements ActionListener {
     private void registrarHoras() {
         try {
             int horas = Integer.parseInt(campoHorasLibres.getText());
-            String evento = (String) comboEvento.getSelectedItem();
-            
-            if (nombreActual != null && evento != null) {
+            if (nombreActual != null) {
                 int horasActuales = horasPorUsuario.getOrDefault(nombreActual, 0);
                 horasPorUsuario.put(nombreActual, horasActuales + horas);
-                guardarDatos();
                 
-                areaResultado.append(String.format(
-                    "Registradas %d horas para el evento '%s'\n",
-                    horas, evento));
+                // Actualizar el contador
+                actualizarHorasTotales();
+                
                 campoHorasLibres.setText("");
+                JOptionPane.showMessageDialog(this, 
+                    "Horas registradas correctamente.\nTotal de horas: " + (horasActuales + horas), 
+                    "Éxito", 
+                    JOptionPane.INFORMATION_MESSAGE);
             }
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this,
-                "Por favor ingrese un número válido de horas",
-                "Error",
+            JOptionPane.showMessageDialog(this, 
+                "Por favor ingrese un número válido", 
+                "Error", 
                 JOptionPane.ERROR_MESSAGE);
         }
     }
