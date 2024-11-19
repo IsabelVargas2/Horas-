@@ -156,37 +156,22 @@ public class HorasLibresUNABApp extends JFrame implements ActionListener {
     }
     
     private void crearPanelEventos() {
-    JPanel panelEventos = new JPanel(new BorderLayout());
-
-    // Crear los datos y las columnas para el JTable
-    String[] columnNames = {"Nombre del Evento", "Descripción", "Duración (Horas)"};
-    DefaultTableModel modelEventos = new DefaultTableModel(columnNames, 0);
-    JTable tablaEventos = new JTable(modelEventos);
-    JScrollPane scrollPaneEventos = new JScrollPane(tablaEventos);
-
-    // Crear un panel para ingresar los detalles del evento
-    JPanel panelIngresoEvento = new JPanel();
-    panelIngresoEvento.setLayout(new BoxLayout(panelIngresoEvento, BoxLayout.Y_AXIS));
-
-    JTextField campoNombreEvento = new JTextField(20);
-    JTextArea areaDescripcionEvento = new JTextArea(3, 20);
-    areaDescripcionEvento.setLineWrap(true);
-
-    panelIngresoEvento.add(new JLabel("Nombre del Evento:"));
-    panelIngresoEvento.add(campoNombreEvento);
-    panelIngresoEvento.add(new JLabel("Descripción del Evento:"));
-    panelIngresoEvento.add(new JScrollPane(areaDescripcionEvento));
-
-    // Crear un botón para agregar el evento
-    JButton botonAgregarEvento = new JButton("Agregar Evento");
-    botonAgregarEvento.addActionListener(e -> agregarNuevoEvento(campoNombreEvento, areaDescripcionEvento, modelEventos));
-
-    panelEventos.add(panelIngresoEvento, BorderLayout.NORTH);
-    panelEventos.add(scrollPaneEventos, BorderLayout.CENTER);
-    panelEventos.add(botonAgregarEvento, BorderLayout.SOUTH);
-
-    tabbedPane.setComponentAt(3, panelEventos); // La pestaña "Eventos" es la 4ta
-}
+        JPanel panelEventos = new JPanel(new BorderLayout());
+        
+        // Crear los datos y las columnas para el JTable
+        String[] columnNames = {"Nombre del Evento", "Duración (Horas)"};
+        DefaultTableModel modelEventos = new DefaultTableModel(columnNames, 0);
+        JTable tablaEventos = new JTable(modelEventos);
+        JScrollPane scrollPaneEventos = new JScrollPane(tablaEventos);
+        
+        // Cargar los eventos existentes en la tabla
+        for (Map.Entry<String, Integer> evento : eventosConocidos.entrySet()) {
+            modelEventos.addRow(new Object[]{evento.getKey(), evento.getValue()});
+        }
+    
+        panelEventos.add(scrollPaneEventos, BorderLayout.CENTER);
+        tabbedPane.setComponentAt(3, panelEventos); // La pestaña "Eventos" es la 4ta
+    }
 private void mostrarEventos(JTextArea areaEventos) {
     areaEventos.setText("");  // Limpiar el área de texto
     for (Map.Entry<String, Integer> evento : eventosConocidos.entrySet()) {
