@@ -1,5 +1,6 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -155,47 +156,56 @@ public class HorasLibresUNABApp extends JFrame implements ActionListener {
     }
     
     private void crearPanelEventos() {
-        // Crear un panel para los eventos
-        JPanel panelEventos = new JPanel(new BorderLayout());
-    
-        // Crear un JList para mostrar los eventos
-        DefaultListModel<String> modelEventos = new DefaultListModel<>();
-        JList<String> listaEventos = new JList<>(modelEventos);
-        JScrollPane scrollPaneEventos = new JScrollPane(listaEventos);
-    
-        // Crear un botón para agregar nuevos eventos
-        JButton botonAgregarEvento = new JButton("Agregar Evento");
-        botonAgregarEvento.addActionListener(e -> agregarNuevoEvento(modelEventos));
-    
-        panelEventos.add(scrollPaneEventos, BorderLayout.CENTER);
-        panelEventos.add(botonAgregarEvento, BorderLayout.SOUTH);
-    
-        // Mostrar los eventos registrados en la lista
-        mostrarEventos(modelEventos);
-    
-        // Añadir el panel de eventos a la pestaña de eventos
-        tabbedPane.setComponentAt(3, panelEventos); // La pestaña "Eventos" es la 4ta
-    }
-    
-    private void mostrarEventos(DefaultListModel<String> modelEventos) {
-        modelEventos.clear();  // Limpiar la lista
-        for (Map.Entry<String, Integer> evento : eventosConocidos.entrySet()) {
-            modelEventos.addElement("Evento: " + evento.getKey() + " - " + evento.getValue() + " horas");
-        }
-    }
-    
-    private void agregarNuevoEvento(DefaultListModel<String> modelEventos) {
-        String nuevoEvento = campoNuevoEvento.getText().trim();
-        if (!nuevoEvento.isEmpty() && !eventosConocidos.containsKey(nuevoEvento)) {
-            eventosConocidos.put(nuevoEvento, 0);
-            mostrarEventos(modelEventos);  // Actualizar la lista de eventos
-            campoNuevoEvento.setText("");  // Limpiar el campo de texto
-        } else {
-            JOptionPane.showMessageDialog(this, "El evento ya existe o está vacío", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-    
+    JPanel panelEventos = new JPanel(new BorderLayout());
 
+    // Crear los datos y las columnas para el JTable
+    String[] columnNames = {"Nombre del Evento", "Descripción", "Duración (Horas)"};
+    DefaultTableModel modelEventos = new DefaultTableModel(columnNames, 0);
+    JTable tablaEventos = new JTable(modelEventos);
+    JScrollPane scrollPaneEventos = new JScrollPane(tablaEventos);
+
+    // Crear un panel para ingresar los detalles del evento
+    JPanel panelIngresoEvento = new JPanel();
+    panelIngresoEvento.setLayout(new BoxLayout(panelIngresoEvento, BoxLayout.Y_AXIS));
+
+    JTextField campoNombreEvento = new JTextField(20);
+    JTextArea areaDescripcionEvento = new JTextArea(3, 20);
+    areaDescripcionEvento.setLineWrap(true);
+
+    panelIngresoEvento.add(new JLabel("Nombre del Evento:"));
+    panelIngresoEvento.add(campoNombreEvento);
+    panelIngresoEvento.add(new JLabel("Descripción del Evento:"));
+    panelIngresoEvento.add(new JScrollPane(areaDescripcionEvento));
+
+    // Crear un botón para agregar el evento
+    JButton botonAgregarEvento = new JButton("Agregar Evento");
+    botonAgregarEvento.addActionListener(e -> agregarNuevoEvento(campoNombreEvento, areaDescripcionEvento, modelEventos));
+
+    panelEventos.add(panelIngresoEvento, BorderLayout.NORTH);
+    panelEventos.add(scrollPaneEventos, BorderLayout.CENTER);
+    panelEventos.add(botonAgregarEvento, BorderLayout.SOUTH);
+
+    tabbedPane.setComponentAt(3, panelEventos); // La pestaña "Eventos" es la 4ta
+}
+private void mostrarEventos(JTextArea areaEventos) {
+    areaEventos.setText("");  // Limpiar el área de texto
+    for (Map.Entry<String, Integer> evento : eventosConocidos.entrySet()) {
+        areaEventos.append(String.format("Evento: %s - %d horas\n", evento.getKey(), evento.getValue()));
+    }
+}
+private void agregarNuevoEvento(JTextField campoNombreEvento, JTextArea areaDescripcionEvento, DefaultTableModel modelEventos) {
+    String nombreEvento = campoNombreEvento.getText().trim();
+    String descripcionEvento = areaDescripcionEvento.getText().trim();
+
+    if (!nombreEvento.isEmpty() && !descripcionEvento.isEmpty() && !eventosConocidos.containsKey(nombreEvento)) {
+        eventosConocidos.put(nombreEvento, 0);  // Aquí agregas el evento al mapa
+        modelEventos.addRow(new Object[]{nombreEvento, descripcionEvento, 0});
+        campoNombreEvento.setText("");  // Limpiar el campo de nombre
+        areaDescripcionEvento.setText("");  // Limpiar la descripción
+    } else {
+        JOptionPane.showMessageDialog(this, "El evento o la descripción está vacío o ya existe", "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
     private void crearPanelPerfil() {
     // Comprobamos que el usuario esté logueado antes de mostrar el perfil
     if (nombreActual == null) return;
