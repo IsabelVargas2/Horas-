@@ -1,11 +1,11 @@
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+import javax.swing.*;
+import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableModel;
 
 
 public class HorasLibresUNABApp extends JFrame implements ActionListener {
@@ -137,7 +137,7 @@ public class HorasLibresUNABApp extends JFrame implements ActionListener {
     }
     private void agregarLogotipo() {
         // Cargar la imagen
-        ImageIcon icono = new ImageIcon("ruta/a/tu/imagen/logo.png"); // Asegúrate de que la ruta sea correcta
+        ImageIcon icono = new ImageIcon("imagenes/logo.png"); // Asegúrate de que la ruta sea correcta
     
         // Crear un JLabel con el ImageIcon
         JLabel logotipoLabel = new JLabel(icono);
@@ -156,59 +156,118 @@ public class HorasLibresUNABApp extends JFrame implements ActionListener {
     }
     
     private void crearPanelEventos() {
-        JPanel panelEventos = new JPanel(new BorderLayout());
-        
-        // Panel superior para eventos actuales
-        JPanel panelEventosActuales = new JPanel(new BorderLayout());
-        JLabel labelEventosActuales = new JLabel("Eventos Actuales", SwingConstants.CENTER);
-        labelEventosActuales.setFont(new Font("Arial", Font.BOLD, 14));
-        
-        // Crear los datos y las columnas para el JTable de eventos actuales
-        String[] columnNames = {"Nombre del Evento", "Duración (Horas)"};
-        DefaultTableModel modelEventos = new DefaultTableModel(columnNames, 0);
-        JTable tablaEventos = new JTable(modelEventos);
-        JScrollPane scrollPaneEventos = new JScrollPane(tablaEventos);
-        
-        // Cargar los eventos existentes en la tabla
-        for (Map.Entry<String, Integer> evento : eventosConocidos.entrySet()) {
-            modelEventos.addRow(new Object[]{evento.getKey(), evento.getValue()});
+    JPanel panelEventos = new JPanel(new BorderLayout(10, 10));
+    panelEventos.setBackground(COLOR_FONDO);
+    panelEventos.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+    // Panel superior para título
+    JPanel panelTitulo = new JPanel(new FlowLayout(FlowLayout.CENTER));
+    panelTitulo.setBackground(COLOR_FONDO);
+    JLabel titulo = new JLabel("Catálogo de Eventos Disponibles");
+    titulo.setFont(new Font("Arial", Font.BOLD, 20));
+    titulo.setForeground(COLOR_NARANJA);
+    panelTitulo.add(titulo);
+
+    // Crear los datos y las columnas para el JTable
+    String[] columnNames = {"Nombre del Evento", "Horas Otorgadas", "Horario Disponible", "Ubicación", "Cupos"};
+    DefaultTableModel modelEventos = new DefaultTableModel(columnNames, 0) {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false; // Hace que la tabla no sea editable
         }
-    
-        panelEventosActuales.add(labelEventosActuales, BorderLayout.NORTH);
-        panelEventosActuales.add(scrollPaneEventos, BorderLayout.CENTER);
-    
-        // Panel inferior para próximos eventos
-        JPanel panelProximosEventos = new JPanel(new BorderLayout());
-        JLabel labelProximosEventos = new JLabel("Próximos Eventos", SwingConstants.CENTER);
-        labelProximosEventos.setFont(new Font("Arial", Font.BOLD, 14));
-        
-        // Crear tabla para próximos eventos
-        String[] columnasProximos = {"Evento", "Fecha", "Hora"};
-        DefaultTableModel modelProximos = new DefaultTableModel(columnasProximos, 0);
-        JTable tablaProximos = new JTable(modelProximos);
-        JScrollPane scrollPaneProximos = new JScrollPane(tablaProximos);
-    
-        // Aquí puedes agregar algunos eventos de ejemplo
-        modelProximos.addRow(new Object[]{"Reunión de estudiantes", "20/11/2024", "10:00 AM"});
-        modelProximos.addRow(new Object[]{"Taller de programación", "22/11/2024", "2:00 PM"});
-        
-        panelProximosEventos.add(labelProximosEventos, BorderLayout.NORTH);
-        panelProximosEventos.add(scrollPaneProximos, BorderLayout.CENTER);
-    
-        // Crear un JSplitPane para dividir las dos secciones
-        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-                panelEventosActuales, panelProximosEventos);
-        splitPane.setResizeWeight(0.5); // Divide el espacio equitativamente
-        
-        panelEventos.add(splitPane, BorderLayout.CENTER);
-        tabbedPane.setComponentAt(3, panelEventos);
+    };
+
+    // Agregar datos de ejemplo (estos pueden ser cargados desde una base de datos)
+    Object[][] eventosData = {
+        {"Voluntariado Hospital", 4, "Lunes a Viernes 8:00 AM - 12:00 PM", "Fosunab", "20"},
+        {"Tutoría Académica", 2, "Martes y Jueves 2:00 PM - 4:00 PM", "Biblioteca ", "15"},
+        {"Apoyo Administrativo", 3, "Miércoles 9:00 AM - 12:00 PM", "Auditorio Mayor", "10"},
+        {"Proyecto Social", 5, "Sábados 8:00 AM - 1:00 PM", "CSU", "25"},
+        {"Investigación", 6, "Flexible", "Laboratorios UNAB", "8"},
+        {"Mentor Estudiantil", 3, "Lunes y Miércoles 3:00 PM - 6:00 PM", "Salón de Estudios", "12"},
+        {"Apoyo Deportivo", 2, "Viernes 2:00 PM - 4:00 PM", "CSU", "15"},
+        {"Biblioteca", 4, "Lunes a Viernes 1:00 PM - 5:00 PM", "Biblioteca ", "6"}
+    };
+
+    // Agregar los datos a la tabla
+    for (Object[] evento : eventosData) {
+        modelEventos.addRow(evento);
     }
-private void mostrarEventos(JTextArea areaEventos) {
-    areaEventos.setText("");  // Limpiar el área de texto
-    for (Map.Entry<String, Integer> evento : eventosConocidos.entrySet()) {
-        areaEventos.append(String.format("Evento: %s - %d horas\n", evento.getKey(), evento.getValue()));
-    }
+
+    // Crear y configurar la tabla
+    JTable tablaEventos = new JTable(modelEventos);
+    tablaEventos.setRowHeight(25);
+    tablaEventos.setFont(new Font("Arial", Font.PLAIN, 14));
+    tablaEventos.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
+    tablaEventos.getTableHeader().setBackground(COLOR_NARANJA);
+    tablaEventos.getTableHeader().setForeground(Color.BLACK);
+    tablaEventos.setSelectionBackground(COLOR_NARANJA_CLARO);
+    tablaEventos.setGridColor(Color.GRAY);
+    tablaEventos.setShowGrid(true);
+
+    // Configurar el ancho de las columnas
+    tablaEventos.getColumnModel().getColumn(0).setPreferredWidth(150); // Nombre
+    tablaEventos.getColumnModel().getColumn(1).setPreferredWidth(100); // Horas
+    tablaEventos.getColumnModel().getColumn(2).setPreferredWidth(200); // Horario
+    tablaEventos.getColumnModel().getColumn(3).setPreferredWidth(150); // Ubicación
+    tablaEventos.getColumnModel().getColumn(4).setPreferredWidth(100); // Cupos
+
+    // Crear panel de búsqueda
+    JPanel panelBusqueda = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelBusqueda.setBackground(COLOR_FONDO);
+    JLabel lblBuscar = new JLabel("Buscar evento: ");
+    lblBuscar.setFont(new Font("Arial", Font.BOLD, 14));
+    JTextField txtBuscar = new JTextField(20);
+    styleTextField(txtBuscar);
+    
+    JButton btnBuscar = new JButton("Buscar");
+    styleButton(btnBuscar);
+    
+    panelBusqueda.add(lblBuscar);
+    panelBusqueda.add(txtBuscar);
+    panelBusqueda.add(btnBuscar);
+
+    // Agregar funcionalidad de búsqueda
+    txtBuscar.getDocument().addDocumentListener(new DocumentListener() {
+        public void changedUpdate(DocumentEvent e) { filtrarTabla(); }
+        public void removeUpdate(DocumentEvent e) { filtrarTabla(); }
+        public void insertUpdate(DocumentEvent e) { filtrarTabla(); }
+
+        private void filtrarTabla() {
+            String texto = txtBuscar.getText().toLowerCase();
+            DefaultTableModel model = (DefaultTableModel) tablaEventos.getModel();
+            model.setRowCount(0); // Limpiar tabla
+
+            for (Object[] evento : eventosData) {
+                if (evento[0].toString().toLowerCase().contains(texto) ||
+                    evento[2].toString().toLowerCase().contains(texto) ||
+                    evento[3].toString().toLowerCase().contains(texto)) {
+                    model.addRow(evento);
+                }
+            }
+        }
+    });
+
+    // Agregar todo al panel principal
+    JScrollPane scrollPane = new JScrollPane(tablaEventos);
+    scrollPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+    panelEventos.add(panelTitulo, BorderLayout.NORTH);
+    panelEventos.add(panelBusqueda, BorderLayout.CENTER);
+    panelEventos.add(scrollPane, BorderLayout.SOUTH);
+
+    // Actualizar la pestaña de eventos en el TabbedPane
+    tabbedPane.setComponentAt(3, panelEventos);
 }
+
+
+    
+    private void mostrarEventos(JTextArea areaEventos) {
+        areaEventos.setText("");  // Limpiar el área de texto
+        for (Map.Entry<String, Integer> evento : eventosConocidos.entrySet()) {
+            areaEventos.append(String.format("Evento: %s - %d horas\n", evento.getKey(), evento.getValue()));
+        }
+    }
 private void agregarNuevoEvento(JTextField campoNombreEvento, JTextArea areaDescripcionEvento, DefaultTableModel modelEventos) {
     String nombreEvento = campoNombreEvento.getText().trim();
     String descripcionEvento = areaDescripcionEvento.getText().trim();
